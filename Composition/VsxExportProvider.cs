@@ -9,7 +9,7 @@ using System.Text.RegularExpressions;
 
 namespace Alphaleonis.Vsx
 {
-   internal class ServiceProviderExportProviderAdapter : ExportProvider
+   internal class VsxExportProvider : ExportProvider
    {
       private static readonly Regex s_numberSuffixRegex = new Regex(@"^(.*)(\d+)$", RegexOptions.Compiled);
       private static readonly Regex s_iVsPrefixRegex = new Regex(@"(.*\.)(IVs)(.*?)(\d*)$", RegexOptions.Compiled);
@@ -18,7 +18,7 @@ namespace Alphaleonis.Vsx
       private readonly ConcurrentDictionary<string, IEnumerable<Export>> m_exportsCache = new ConcurrentDictionary<string, IEnumerable<Export>>();
       private readonly IServiceProvider m_serviceProvider;
 
-      public ServiceProviderExportProviderAdapter(IServiceProvider services)
+      public VsxExportProvider(IServiceProvider services)
       {
          m_serviceProvider = services;
       }
@@ -74,8 +74,9 @@ namespace Alphaleonis.Vsx
       }
 
       private Export[] CreateExport(string contractName, Type serviceType)
-      {         
-         return new Export[] { new Export(contractName, () => m_serviceProvider.GetService(serviceType)) };
+      {
+         var export = new Export(contractName, () => m_serviceProvider.GetService(serviceType));
+         return new Export[] { export };
       }
 
       private static IEnumerable<Type> TryGetExportedTypes(Assembly asm)

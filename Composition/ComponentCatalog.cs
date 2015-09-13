@@ -11,8 +11,8 @@ namespace Alphaleonis.Vsx
    {
       #region Constructors
 
-      public ComponentCatalog(params Assembly[] assemblies)
-          : this(assemblies.SelectMany(a => a.GetTypes()))
+      public ComponentCatalog(Assembly assembly)
+          : this(assembly.GetTypes())
       {
       }
 
@@ -22,7 +22,7 @@ namespace Alphaleonis.Vsx
       }
 
       public ComponentCatalog(IEnumerable<Type> types)
-          : base(types.Select(t => t.IsDefined<ToolkitComponentAttribute>(true) && !t.IsAbstract ? new ComponentType(t) : t))
+          : base(types.Select(t => t.IsDefined<ComponentAttribute>(true) && !t.IsAbstract ? new ComponentType(t) : t))
       {
       }
 
@@ -44,7 +44,7 @@ namespace Alphaleonis.Vsx
 
          private IReadOnlyList<Attribute> GetAdditionalAttributes()
          {
-            ToolkitComponentAttribute tka = m_type.GetCustomAttribute<ToolkitComponentAttribute>();
+            ComponentAttribute tka = m_type.GetCustomAttribute<ComponentAttribute>();
             List<Attribute> additionalAttributes = new List<Attribute>();
             if (tka != null)
             {

@@ -3,14 +3,14 @@
 namespace Alphaleonis.Vsx
 {
    [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = true)]
-   public sealed class ToolkitComponentAttribute : Attribute
+   public sealed class ComponentAttribute : Attribute
    {
-      public ToolkitComponentAttribute()
+      public ComponentAttribute()
          : this(true)
       {
       }
 
-      public ToolkitComponentAttribute(bool isSingleton)
+      public ComponentAttribute(bool isSingleton)
       {
          IsSingleton = isSingleton;
       }

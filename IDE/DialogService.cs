@@ -10,7 +10,7 @@ namespace Alphaleonis.Vsx
    /// <summary>
    /// Default implementation of the <see cref="IMessageBoxService"/>.
    /// </summary>
-   [ToolkitComponent(true)]
+   [ComponentAttribute(true)]
    [Export(typeof(IDialogService))]
    internal class DialogService : IDialogService
    {
