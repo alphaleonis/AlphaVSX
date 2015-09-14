@@ -5,7 +5,7 @@ using System;
 
 namespace Alphaleonis.Vsx
 {
-   [ComponentAttribute(true)]
+   [Component(true)]
    internal class VisualStudioImpl : IVisualStudio
    {      
       public VisualStudioImpl(IServiceLocator serviceLocator, IDialogService dialogService)

@@ -8,9 +8,7 @@ namespace Alphaleonis.EventSourceClassGenerator
 {
    internal static class SyntaxNodeExtensions
    {
-      public static T WithPrependedLeadingTrivia<T>(
-            this T node,
-            params SyntaxTrivia[] trivia) where T : SyntaxNode
+      public static T WithPrependedLeadingTrivia<T>(this T node, params SyntaxTrivia[] trivia) where T : SyntaxNode
       {
          if (trivia.Length == 0)
          {

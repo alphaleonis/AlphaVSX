@@ -6,41 +6,31 @@ using System.Windows;
 
 namespace Alphaleonis.Vsx
 {
-
-   /// <summary>
-   /// Default implementation of the <see cref="IMessageBoxService"/>.
-   /// </summary>
-   [ComponentAttribute(true)]
-   [Export(typeof(IDialogService))]
+   [Component(true)]   
    internal class DialogService : IDialogService
    {
-      public const string DefaultTitle = "Microsoft Visual Studio";
-      public const MessageBoxButton DefaultButton = MessageBoxButton.OK;
-      public const MessageBoxImage DefaultIcon = MessageBoxImage.None;
-      public const MessageBoxResult DefaultResult = MessageBoxResult.OK;
+      #region Private Fields
 
       private readonly IVsUIShell m_vsShell;
 
-      //private IUIThread uiThread;
+      #endregion
 
-      /// <summary>
-      /// Default constructor for runtime behavior that can't be mocked.
-      /// </summary>
+      #region Constructor
+
       [ImportingConstructor]
-      public DialogService(IVsUIShell uiShell/*, IUIThread uiThread*/)
-      {     
-         this.m_vsShell = uiShell;
-         //this.uiThread = uiThread;
+      public DialogService(IVsUIShell uiShell)
+      {
+         m_vsShell = uiShell;
       }
 
-      public bool? ShowMessageBox(string message,
-          string title = DefaultTitle,
-          MessageBoxButton button = DefaultButton,
-          MessageBoxImage icon = DefaultIcon,
-          MessageBoxResult defaultResult = DefaultResult)
+      #endregion
+
+      #region Public Methods
+
+      public MessageBoxResult ShowMessageBox(string message, string title = "Microsoft Visual Studio", MessageBoxButton button = MessageBoxButton.OK, MessageBoxImage icon = MessageBoxImage.Information, MessageBoxResult defaultResult = MessageBoxResult.OK)
       {
-         var classId = Guid.Empty;
-         var result = 0;
+         Guid classId = Guid.Empty;
+         int result;
 
          m_vsShell.ShowMessageBox(0, ref classId, title, message, string.Empty, 0,
              ToOleButton(button),
@@ -48,40 +38,12 @@ namespace Alphaleonis.Vsx
              ToOleIcon(icon),
              0, out result);
 
-         if (result == OleMessageBoxResult.IDOK || result == OleMessageBoxResult.IDYES)
-            return true;
-         else if (result == OleMessageBoxResult.IDNO)
-            return false;
-
-         return null;
+         return FromOleResult(result);
       }
 
-      //public MessageBoxResult Prompt(string message,
-      //    string title = DefaultTitle,
-      //    MessageBoxButton button = DefaultButton,
-      //    MessageBoxImage icon = MessageBoxImage.Question,
-      //    MessageBoxResult defaultResult = DefaultResult)
-      //{
-      //   return uiShell.Prompt(message, title, button, icon, defaultResult);
-      //}
+      #endregion
 
-      //public string InputBox(string message, string title = DefaultTitle)
-      //{
-      //   return uiThread.Invoke(() =>
-      //   {
-      //      var dialog = new InputBox();
-      //      dialog.Message = message;
-      //      dialog.Title = title;
-      //      dialog.ShowInTaskbar = false;
-      //      IntPtr parent;
-      //      uiShell.GetDialogOwnerHwnd(out parent);
-
-      //      if (Microsoft.Internal.VisualStudio.PlatformUI.WindowHelper.ShowModal(dialog, parent) != 0)
-      //         return dialog.ResponseText;
-
-      //      return null;
-      //   });
-      //}
+      #region Private Methods
 
       private static OLEMSGBUTTON ToOleButton(MessageBoxButton button)
       {
@@ -153,7 +115,7 @@ namespace Alphaleonis.Vsx
          }
       }
 
-      private static MessageBoxResult FromOle(int value)
+      private static MessageBoxResult FromOleResult(int value)
       {
          switch (value)
          {
@@ -172,7 +134,7 @@ namespace Alphaleonis.Vsx
 
          return MessageBoxResult.No;
       }
-     
+
       internal static class OleMessageBoxResult
       {
          public const int IDABORT = 3;
@@ -187,5 +149,6 @@ namespace Alphaleonis.Vsx
          public const int IDTRYAGAIN = 10;
          public const int IDYES = 6;
       }
+      #endregion
    }
 }
