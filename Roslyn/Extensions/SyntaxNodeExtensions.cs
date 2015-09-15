@@ -4,9 +4,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Alphaleonis.EventSourceClassGenerator
+namespace Alphaleonis.Vsx
 {
-   internal static class SyntaxNodeExtensions
+   public static class SyntaxNodeExtensions
    {
       public static T WithPrependedLeadingTrivia<T>(this T node, params SyntaxTrivia[] trivia) where T : SyntaxNode
       {
