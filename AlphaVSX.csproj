@@ -201,10 +201,13 @@
     <Compile Include="Roslyn\Extensions\INamespaceOrTypeSymbolExtensions.cs" />
     <Compile Include="Roslyn\Extensions\ISymbolExtensions.cs" />
     <Compile Include="Roslyn\Extensions\ITypeSymbolExtensions.cs" />
+    <Compile Include="Roslyn\Extensions\SyntaxGeneratorExtensions.cs" />
     <Compile Include="Roslyn\Extensions\SyntaxNodeExtensions.cs" />
     <Compile Include="SingleFileGenerator\BaseCodeGenerator.cs" />
-    <Compile Include="SingleFileGenerator\BaseRoslynCodeGenerator.cs" />
+    <Compile Include="SingleFileGenerator\RoslynCodeGeneratorBase.cs" />
     <Compile Include="SingleFileGenerator\BaseTextCodeGenerator.cs" />
+    <Compile Include="SingleFileGenerator\CSharpRoslynCodeGenerationContext.cs" />
+    <Compile Include="SingleFileGenerator\CSharpRoslynCodeGenerator.cs" />
     <Compile Include="SingleFileGenerator\TextFileGeneratorException.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -253,6 +256,9 @@
   <ItemGroup>
     <Analyzer Include="..\packages\Microsoft.CodeAnalysis.Analyzers.1.0.0\analyzers\dotnet\cs\Microsoft.CodeAnalysis.Analyzers.dll" />
     <Analyzer Include="..\packages\Microsoft.CodeAnalysis.Analyzers.1.0.0\analyzers\dotnet\cs\Microsoft.CodeAnalysis.CSharp.Analyzers.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

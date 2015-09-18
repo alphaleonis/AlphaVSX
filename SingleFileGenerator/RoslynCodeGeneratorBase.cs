@@ -1,17 +1,19 @@
 ﻿using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.LanguageServices;
 using System;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Alphaleonis.Vsx
 {
    [ComVisible(true)]
-   public abstract class BaseRoslynCodeGenerator : BaseTextCodeGenerator
-   {      
+   public abstract class RoslynCodeGeneratorBase : BaseTextCodeGenerator
+   {
       protected sealed override void GenerateCode(string inputFilePath, string inputFileContent, TextWriter writer)
       {
          Microsoft.VisualStudio.Shell.ThreadHelper.JoinableTaskFactory.Run(async () =>
@@ -38,7 +40,7 @@ namespace Alphaleonis.Vsx
             await writer.WriteLineAsync((await document.GetTextAsync()).ToString());
          });
       }
-      
-      protected abstract Task<Document> GenerateCodeAsync(Document inputDocument);      
+
+      protected abstract Task<Document> GenerateCodeAsync(Document inputDocument);
    }
 }
