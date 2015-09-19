@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.CodeAnalysis;
+using System;
 using System.Runtime.Serialization;
 
 namespace Alphaleonis.Vsx
@@ -11,6 +12,28 @@ namespace Alphaleonis.Vsx
       {
          Line = -1;
          Column = -1;
+      }
+
+      public TextFileGeneratorException(Location location, string message, Exception inner)
+         : this(location == null ? -1 : location.GetMappedLineSpan().StartLinePosition.Line, location == null ? -1 : location.GetMappedLineSpan().StartLinePosition.Character, message, inner)
+      {
+
+      }
+
+      public TextFileGeneratorException(Location location, string message)
+         : this(location == null ? -1 : location.GetMappedLineSpan().StartLinePosition.Line, location == null ? -1 : location.GetMappedLineSpan().StartLinePosition.Character, message)
+      {
+
+      }
+
+      public TextFileGeneratorException(SyntaxNode syntax, string message)
+         : this(syntax.GetLocation(), message)
+      {
+      }
+
+      public TextFileGeneratorException(ISymbol symbol, string message)
+         : this(symbol.Locations.Length == 0 ? null : symbol.Locations[0], message)
+      {
       }
 
       public TextFileGeneratorException(int line, string message) : this(line, -1, message) { }

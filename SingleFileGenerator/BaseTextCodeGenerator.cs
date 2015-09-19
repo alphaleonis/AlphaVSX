@@ -1,10 +1,6 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
-using Microsoft.CodeAnalysis.Text;
-using System.Runtime.Serialization;
 using System.Runtime.InteropServices;
 
 namespace Alphaleonis.Vsx
@@ -26,13 +22,7 @@ namespace Alphaleonis.Vsx
                {
                   int line = gex.Line;
                   int column = gex.Column;
-                  //if (gex.Location != null)
-                  //{
-                  //   LinePosition startPosition = gex.Location.GetMappedLineSpan().StartLinePosition;
-                  //   line = startPosition.Line;
-                  //   column = startPosition.Character;
-                  //}
-
+      
                   ReportError(gex.Message, line, column);
                   writer.WriteLine("#error Error generating code: \"{0}\"", gex.Message);
                }

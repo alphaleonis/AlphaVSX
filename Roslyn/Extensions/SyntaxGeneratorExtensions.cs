@@ -1,5 +1,6 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Editing;
 using System;
 using System.Collections.Generic;
@@ -29,6 +30,59 @@ namespace AlphaVSX.Roslyn
                )                        
             }
          );
+      }
+
+      public static SyntaxNode AddStatements(this SyntaxGenerator generator, SyntaxNode declaration, params SyntaxNode[] statements)
+      {
+         return generator.WithStatements(declaration, generator.GetStatements(declaration).Concat(statements));
+      }
+
+      public static SyntaxNode CatchClause(this SyntaxGenerator generator, IEnumerable<SyntaxNode> statements)
+      {
+         return SyntaxFactory.CatchClause().WithBlock(SyntaxFactory.Block(statements.Cast<StatementSyntax>()));
+      }
+
+      public static SyntaxNode CatchClause(this SyntaxGenerator generator, INamedTypeSymbol exceptionType, IEnumerable<SyntaxNode> statements)
+      {
+         return SyntaxFactory.CatchClause(
+            SyntaxFactory.CatchDeclaration(
+               (TypeSyntax)generator.TypeExpression(exceptionType)
+            ),
+            null,
+            SyntaxFactory.Block(
+               statements.Cast<StatementSyntax>()
+            )
+         );
+      }
+
+      public static SyntaxTriviaList CreateEndRegionTrivia(this SyntaxGenerator generator)
+      {         
+         return
+            SyntaxFactory.TriviaList(
+               SyntaxFactory.EndOfLine(Environment.NewLine),
+               SyntaxFactory.EndOfLine(Environment.NewLine),
+               SyntaxFactory.Trivia(
+                  SyntaxFactory.EndRegionDirectiveTrivia(true)
+               )
+            );
+      }
+
+      public static SyntaxTriviaList CreateRegionTrivia(this SyntaxGenerator generator, string regionName)
+      {
+         return
+            SyntaxFactory.TriviaList(
+               SyntaxFactory.Trivia(
+                  SyntaxFactory.RegionDirectiveTrivia(true)
+                     .WithEndOfDirectiveToken(
+                        SyntaxFactory.Token(
+                           SyntaxFactory.TriviaList(SyntaxFactory.PreprocessingMessage(regionName)),
+                           SyntaxKind.EndOfDirectiveToken,
+                           SyntaxFactory.TriviaList()
+                        )
+                     ).NormalizeWhitespace()
+               ),
+               SyntaxFactory.EndOfLine(Environment.NewLine)
+            );
       }
    }
 }

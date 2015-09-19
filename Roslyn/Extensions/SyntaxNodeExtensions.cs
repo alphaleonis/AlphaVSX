@@ -1,5 +1,6 @@
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,17 +9,17 @@ namespace Alphaleonis.Vsx
 {
    public static class SyntaxNodeExtensions
    {
-      public static T WithPrependedLeadingTrivia<T>(this T node, params SyntaxTrivia[] trivia) where T : SyntaxNode
+      public static T PrependLeadingTrivia<T>(this T node, params SyntaxTrivia[] trivia) where T : SyntaxNode
       {
          if (trivia.Length == 0)
          {
             return node;
          }
 
-         return node.WithPrependedLeadingTrivia((IEnumerable<SyntaxTrivia>)trivia);
+         return node.PrependLeadingTrivia((IEnumerable<SyntaxTrivia>)trivia);
       }
 
-      public static T WithPrependedLeadingTrivia<T>(this T node, SyntaxTriviaList trivia) where T : SyntaxNode
+      public static T PrependLeadingTrivia<T>(this T node, SyntaxTriviaList trivia) where T : SyntaxNode
       {
          if (trivia.Count == 0)
          {
@@ -28,22 +29,22 @@ namespace Alphaleonis.Vsx
          return node.WithLeadingTrivia(trivia.Concat(node.GetLeadingTrivia()));
       }
 
-      public static T WithPrependedLeadingTrivia<T>(this T node, IEnumerable<SyntaxTrivia> trivia) where T : SyntaxNode
+      public static T PrependLeadingTrivia<T>(this T node, IEnumerable<SyntaxTrivia> trivia) where T : SyntaxNode
       {
-         return node.WithPrependedLeadingTrivia(trivia.ToSyntaxTriviaList());
+         return node.PrependLeadingTrivia(trivia.ToSyntaxTriviaList());
       }
 
-      public static T WithAppendedTrailingTrivia<T>(this T node, params SyntaxTrivia[] trivia) where T : SyntaxNode
+      public static T AddTrailingTrivia<T>(this T node, params SyntaxTrivia[] trivia) where T : SyntaxNode
       {
          if (trivia.Length == 0)
          {
             return node;
          }
 
-         return node.WithAppendedTrailingTrivia((IEnumerable<SyntaxTrivia>)trivia);
+         return node.AddTrailingTrivia((IEnumerable<SyntaxTrivia>)trivia);
       }
 
-      public static T WithAppendedTrailingTrivia<T>(this T node, SyntaxTriviaList trivia) where T : SyntaxNode
+      public static T AddTrailingTrivia<T>(this T node, SyntaxTriviaList trivia) where T : SyntaxNode
       {
          if (trivia.Count == 0)
          {
@@ -53,11 +54,14 @@ namespace Alphaleonis.Vsx
          return node.WithTrailingTrivia(node.GetTrailingTrivia().Concat(trivia));
       }
 
-      public static T WithAppendedTrailingTrivia<T>(this T node, IEnumerable<SyntaxTrivia> trivia) where T : SyntaxNode
+      public static T AddTrailingTrivia<T>(this T node, IEnumerable<SyntaxTrivia> trivia) where T : SyntaxNode
       {
-         return node.WithAppendedTrailingTrivia(trivia.ToSyntaxTriviaList());
+         return node.AddTrailingTrivia(trivia.ToSyntaxTriviaList());
       }
 
-      
+      public static T AddNewLineTrivia<T>(this T node) where T : SyntaxNode
+      {
+         return node.AddTrailingTrivia(SyntaxFactory.EndOfLine(Environment.NewLine));
+      }
    }
 }

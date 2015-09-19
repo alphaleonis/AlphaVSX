@@ -198,11 +198,13 @@
     <Compile Include="Composition\ServiceProviderExtensions.cs" />
     <Compile Include="IDE\Toolkit.cs" />
     <Compile Include="Composition\ComponentAttribute.cs" />
+    <Compile Include="Roslyn\Extensions\CompilationUnitSyntaxExtensions.cs" />
     <Compile Include="Roslyn\Extensions\INamespaceOrTypeSymbolExtensions.cs" />
     <Compile Include="Roslyn\Extensions\ISymbolExtensions.cs" />
     <Compile Include="Roslyn\Extensions\ITypeSymbolExtensions.cs" />
     <Compile Include="Roslyn\Extensions\SyntaxGeneratorExtensions.cs" />
     <Compile Include="Roslyn\Extensions\SyntaxNodeExtensions.cs" />
+    <Compile Include="Roslyn\Extensions\TypeDeclarationSyntaxExtensions.cs" />
     <Compile Include="SingleFileGenerator\BaseCodeGenerator.cs" />
     <Compile Include="SingleFileGenerator\RoslynCodeGeneratorBase.cs" />
     <Compile Include="SingleFileGenerator\BaseTextCodeGenerator.cs" />

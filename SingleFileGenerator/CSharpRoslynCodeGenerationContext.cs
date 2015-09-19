@@ -18,6 +18,9 @@ namespace Alphaleonis.Vsx
          if (document == null)
             throw new ArgumentNullException(nameof(document), $"{nameof(document)} is null.");
 
+         Compilation = compilation;
+         SyntaxTree = syntaxTree;
+         SemanticModel = semanticModel;
          Document = document;
          Generator = SyntaxGenerator.GetGenerator(document);
       }
@@ -59,16 +62,6 @@ namespace Alphaleonis.Vsx
       public INamedTypeSymbol GetTypeByMetadataName(string fullyQualifiedMetadataName)
       {
          return Compilation.GetTypeByMetadataName(fullyQualifiedMetadataName);
-      }
-
-      public IEnumerable<ClassDeclarationSyntax> GetTopLevelClasses()
-      {
-         return CompilationUnit.DescendantNodes(node => node.IsKind(Microsoft.CodeAnalysis.CSharp.SyntaxKind.NamespaceDeclaration)).OfType<ClassDeclarationSyntax>();
-      }
-
-      public IEnumerable<InterfaceDeclarationSyntax> GetTopLevelInterfaces()
-      {
-         return CompilationUnit.DescendantNodes(node => node.IsKind(Microsoft.CodeAnalysis.CSharp.SyntaxKind.NamespaceDeclaration)).OfType<InterfaceDeclarationSyntax>();
-      }
+      }    
    }
 }
