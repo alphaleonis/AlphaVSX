@@ -17,8 +17,8 @@ namespace AlphaVSX.Roslyn
       /// </summary>
       /// <param name="compilationUnit">The compilationUnit to act on.</param>    
       public static IEnumerable<ClassDeclarationSyntax> TopLevelClasses(this CompilationUnitSyntax compilationUnit)
-      {         
-         return compilationUnit.DescendantNodes(node => node.IsKind(Microsoft.CodeAnalysis.CSharp.SyntaxKind.NamespaceDeclaration)).OfType<ClassDeclarationSyntax>();
+      {
+         return compilationUnit.DescendantNodes(node => node.IsKind(SyntaxKind.NamespaceDeclaration) || node.IsKind(SyntaxKind.CompilationUnit)).OfType<ClassDeclarationSyntax>();
       }
 
       /// <summary>
