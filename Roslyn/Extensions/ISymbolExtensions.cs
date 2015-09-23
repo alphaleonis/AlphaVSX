@@ -23,5 +23,20 @@ namespace Alphaleonis.Vsx
 
          return null;
       }
+
+      public static IEnumerable<AttributeData> GetAttributes(this ISymbol symbol, ITypeSymbol attributeType)
+      {
+         return symbol.GetAttributes().Where(attr => attr.AttributeClass.Equals(attributeType));
+      }
+
+      public static AttributeData GetAttribute(this ISymbol symbol, ITypeSymbol attributeType)
+      {
+         IEnumerable<AttributeData> attributes = symbol.GetAttributes(attributeType);
+         if (attributes.Skip(1).Any())
+            throw new InvalidOperationException($"Multiple attributes of type {attributeType.GetFullName()} were found on {symbol.Name}.");
+
+         return attributes.FirstOrDefault();
+
+      }
    }
 }
