@@ -20,6 +20,12 @@ namespace Alphaleonis.Vsx
 
       }
 
+      public TextFileGeneratorException(AttributeData location, string message)
+         : this(location?.ApplicationSyntaxReference?.GetSyntax()?.GetLocation(), message)              
+      {
+
+      }
+
       public TextFileGeneratorException(Location location, string message)
          : this(location == null ? -1 : location.GetMappedLineSpan().StartLinePosition.Line, location == null ? -1 : location.GetMappedLineSpan().StartLinePosition.Character, message)
       {

@@ -188,11 +188,12 @@
     <Compile Include="Composition\MefServiceLocator.cs" />
     <Compile Include="Composition\ParameterInfoDelegator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ReflectionExtensions.cs" />
+    <Compile Include="Utilities\ReflectionExtensions.cs" />
     <Compile Include="Composition\VsxExportProvider.cs" />
     <Compile Include="Composition\ServiceProviderExtensions.cs" />
     <Compile Include="IDE\Toolkit.cs" />
     <Compile Include="Composition\ComponentAttribute.cs" />
+    <Compile Include="Roslyn\AttributeParser.cs" />
     <Compile Include="Roslyn\Extensions\CompilationExtensions.cs" />
     <Compile Include="Roslyn\Extensions\CompilationUnitSyntaxExtensions.cs" />
     <Compile Include="Roslyn\Extensions\INamespaceOrTypeSymbolExtensions.cs" />
@@ -208,6 +209,8 @@
     <Compile Include="SingleFileGenerator\CSharpRoslynCodeGenerationContext.cs" />
     <Compile Include="SingleFileGenerator\CSharpRoslynCodeGenerator.cs" />
     <Compile Include="SingleFileGenerator\TextFileGeneratorException.cs" />
+    <Compile Include="Utilities\SmartEnumerable.cs" />
+    <Compile Include="Utilities\StringUtils.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

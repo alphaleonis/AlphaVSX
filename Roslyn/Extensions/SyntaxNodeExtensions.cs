@@ -29,6 +29,31 @@ namespace Alphaleonis.Vsx
          return node.WithLeadingTrivia(trivia.Concat(node.GetLeadingTrivia()));
       }
 
+      public static T AddLeadingTrivia<T>(this T node, params SyntaxTrivia[] trivia) where T : SyntaxNode
+      {
+         if (trivia.Length == 0)
+         {
+            return node;
+         }
+
+         return node.AddLeadingTrivia((IEnumerable<SyntaxTrivia>)trivia);
+
+      }
+      public static T AddLeadingTrivia<T>(this T node, SyntaxTriviaList trivia) where T : SyntaxNode
+      {
+         if (trivia.Count == 0)
+         {
+            return node;
+         }
+
+         return node.WithLeadingTrivia(node.GetLeadingTrivia().Concat(trivia));
+      }
+
+      public static T AddLeadingTrivia<T>(this T node, IEnumerable<SyntaxTrivia> trivia) where T : SyntaxNode
+      {
+         return node.AddLeadingTrivia(trivia.ToSyntaxTriviaList());
+      }
+
       public static T PrependLeadingTrivia<T>(this T node, IEnumerable<SyntaxTrivia> trivia) where T : SyntaxNode
       {
          return node.PrependLeadingTrivia(trivia.ToSyntaxTriviaList());

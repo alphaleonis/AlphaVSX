@@ -65,10 +65,10 @@ namespace AlphaVSX.Roslyn
          return
             SyntaxFactory.TriviaList(
                SyntaxFactory.EndOfLine(Environment.NewLine),
-               SyntaxFactory.EndOfLine(Environment.NewLine),
                SyntaxFactory.Trivia(
                   SyntaxFactory.EndRegionDirectiveTrivia(true)
-               )
+               ),
+               SyntaxFactory.EndOfLine(Environment.NewLine)
             );
       }
 
@@ -88,6 +88,16 @@ namespace AlphaVSX.Roslyn
                ),
                SyntaxFactory.EndOfLine(Environment.NewLine)
             );
+      }
+
+      public static SyntaxTrivia Comment(this SyntaxGenerator generator, string comment)
+      {
+         return SyntaxFactory.Comment(comment);
+      }
+
+      public static SyntaxTrivia NewLine(this SyntaxGenerator generator)
+      {
+         return SyntaxFactory.EndOfLine(Environment.NewLine);
       }
    }
 }

@@ -58,10 +58,11 @@ namespace Alphaleonis.Vsx
       }
 
       public SyntaxGenerator Generator { get; }
+      
 
-      public CSharpRoslynCodeGenerationContext WithDocument(Document document)
+      public Task<CSharpRoslynCodeGenerationContext> WithDocumentAsync(Document document)
       {
-         return CreateAsync(document).Result;
+         return CreateAsync(document);
       }
 
       public INamedTypeSymbol GetTypeByMetadataName(string fullyQualifiedMetadataName)
