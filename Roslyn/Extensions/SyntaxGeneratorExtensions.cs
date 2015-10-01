@@ -99,5 +99,22 @@ namespace AlphaVSX.Roslyn
       {
          return SyntaxFactory.EndOfLine(Environment.NewLine);
       }
+
+      public static SyntaxNode WithThisConstructorInitializer(this SyntaxGenerator generator, SyntaxNode constructor, IEnumerable<SyntaxNode> thisConstructorArguments)
+      {
+         ConstructorDeclarationSyntax ctor = constructor as ConstructorDeclarationSyntax;
+         if (ctor == null)
+            throw new ArgumentException($"Invalid SyntaxNode in call to {nameof(WithThisConstructorInitializer)}.");
+
+         return ctor.WithInitializer(
+            SyntaxFactory.ConstructorInitializer(SyntaxKind.ThisConstructorInitializer,
+               SyntaxFactory.ArgumentList(
+                  SyntaxFactory.SeparatedList(
+                     thisConstructorArguments.Select(arg => SyntaxFactory.Argument((ExpressionSyntax)arg))
+                  )
+               )
+            )
+         );
+      }
    }
 }
