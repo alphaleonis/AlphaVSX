@@ -6,15 +6,26 @@ namespace Alphaleonis.Vsx
    public sealed class ComponentAttribute : Attribute
    {
       public ComponentAttribute()
-         : this(true)
       {
       }
 
-      public ComponentAttribute(bool isSingleton)
+      public ComponentAttribute(string name, bool isSingleton)         
       {
+         Name = name;
          IsSingleton = isSingleton;
       }
 
+      public ComponentAttribute(bool isSingleton)
+         : this(null, isSingleton)
+      {
+      }
+
+      
+
+      public string Name
+      {
+         get; set;
+      }
 
       public bool IsSingleton
       {

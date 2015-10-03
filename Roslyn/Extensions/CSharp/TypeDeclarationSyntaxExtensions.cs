@@ -3,9 +3,8 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Linq;
 
-namespace Alphaleonis.Vsx
+namespace Alphaleonis.Vsx.Roslyn.CSharp
 {
-
    public static class TypeDeclarationSyntaxExtensions
    {
       public static bool IsPartial(this TypeDeclarationSyntax node)

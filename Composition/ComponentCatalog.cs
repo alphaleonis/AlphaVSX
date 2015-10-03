@@ -50,10 +50,10 @@ namespace Alphaleonis.Vsx
             {
                if (!m_type.IsDefined<ExportAttribute>())
                {
-                  additionalAttributes.Add(new ExportAttribute(m_type));
+                  additionalAttributes.Add(new ExportAttribute(tka.Name, m_type));
                   additionalAttributes.AddRange(m_type.GetInterfaces()
                      .Where(ifc => !ifc.Equals(typeof(IDisposable)))
-                     .Select(ifc => new ExportAttribute(ifc)));
+                     .Select(ifc => new ExportAttribute(tka.Name, ifc)));
                }
 
                if (!m_type.IsDefined<PartCreationPolicyAttribute>())

@@ -18,7 +18,7 @@ namespace Alphaleonis.Vsx
                {
                   GenerateCode(inputFilePath, inputFileContent, writer);
                }
-               catch (TextFileGeneratorException gex)
+               catch (CodeGeneratorException gex)
                {
                   int line = gex.Line;
                   int column = gex.Column;

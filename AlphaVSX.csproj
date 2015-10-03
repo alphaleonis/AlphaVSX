@@ -43,6 +43,9 @@
     <Reference Include="envdte, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <EmbedInteropTypes>False</EmbedInteropTypes>
     </Reference>
+    <Reference Include="EnvDTE80, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <EmbedInteropTypes>False</EmbedInteropTypes>
+    </Reference>
     <Reference Include="Microsoft.CodeAnalysis, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.CodeAnalysis.Common.1.0.0\lib\net45\Microsoft.CodeAnalysis.dll</HintPath>
       <Private>True</Private>
@@ -169,6 +172,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Core" />
+    <Reference Include="System.Reflection.Context" />
     <Reference Include="System.Reflection.Metadata, Version=1.0.21.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Reflection.Metadata.1.0.21\lib\portable-net45+win8\System.Reflection.Metadata.dll</HintPath>
       <Private>True</Private>
@@ -177,10 +181,54 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+    <Reference Include="VSLangProj, Version=7.0.3300.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <EmbedInteropTypes>False</EmbedInteropTypes>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="VSLangProj80, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <EmbedInteropTypes>False</EmbedInteropTypes>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Composition\ComponentCatalog.cs" />
     <Compile Include="Composition\ConstructorInfoDelegator.cs" />
+    <Compile Include="IDE\IOutputWindow.cs" />
+    <Compile Include="IDE\SolutionExplorer\EnumerableExtensions.cs" />
+    <Compile Include="IDE\SolutionExplorer\Factories\SolutionItemNodeFactory.cs" />
+    <Compile Include="IDE\SolutionExplorer\Node Interfaces\ISolutionNode.cs" />
+    <Compile Include="IDE\SolutionExplorer\Node Interfaces\IReferenceNode.cs" />
+    <Compile Include="IDE\SolutionExplorer\Node Interfaces\IReferencesFolderNode.cs" />
+    <Compile Include="IDE\SolutionExplorer\Node Interfaces\ISolutionExplorerNode.cs" />
+    <Compile Include="IDE\SolutionExplorer\Node Interfaces\ISolutionFolderNode.cs" />
+    <Compile Include="IDE\SolutionExplorer\Node Interfaces\ISolutionItemNode.cs" />
+    <Compile Include="IDE\SolutionExplorer\Node Interfaces\IItemNode.cs" />
+    <Compile Include="IDE\SolutionExplorer\Factories\ItemNodeFactory.cs" />
+    <Compile Include="IDE\SolutionExplorer\Node Interfaces\IProjectNode.cs" />
+    <Compile Include="IDE\SolutionExplorer\Node Implementations\FolderNode.cs" />
+    <Compile Include="IDE\SolutionExplorer\Factories\FolderNodeFactory.cs" />
+    <Compile Include="IDE\SolutionExplorer\Factories\GlobalSolutionExplorerNodeFactory.cs" />
+    <Compile Include="IDE\SolutionExplorer\Node Interfaces\IFolderNode.cs" />
+    <Compile Include="IDE\SolutionExplorer\Factories\ISolutionExplorerNodeFactory.cs" />
+    <Compile Include="IDE\SolutionExplorer\ISolutionExplorer.cs" />
+    <Compile Include="IDE\SolutionExplorer\Node Implementations\ItemNode.cs" />
+    <Compile Include="IDE\SolutionExplorer\Node Implementations\ProjectItemNode.cs" />
+    <Compile Include="IDE\SolutionExplorer\Node Implementations\ProjectNode.cs" />
+    <Compile Include="IDE\SolutionExplorer\Factories\ProjectNodeFactory.cs" />
+    <Compile Include="IDE\SolutionExplorer\Node Implementations\ReferenceNode.cs" />
+    <Compile Include="IDE\SolutionExplorer\Factories\ReferenceNodeFactory.cs" />
+    <Compile Include="IDE\SolutionExplorer\Node Implementations\ReferencesFolderNode.cs" />
+    <Compile Include="IDE\SolutionExplorer\Factories\ReferencesFolderNodeFactory.cs" />
+    <Compile Include="IDE\SolutionExplorer\SolutionExplorerNodeKind.cs" />
+    <Compile Include="IDE\SolutionExplorer\Node Implementations\SolutionExplorerNode.cs" />
+    <Compile Include="IDE\SolutionExplorer\Node Implementations\SolutionFolderNode.cs" />
+    <Compile Include="IDE\SolutionExplorer\Factories\SolutionFolderNodeFactory.cs" />
+    <Compile Include="IDE\SolutionExplorer\SolutionHierarchyVisitor.cs" />
+    <Compile Include="IDE\SolutionExplorer\SolutionHierarchyWalker.cs" />
+    <Compile Include="IDE\SolutionExplorer\Node Implementations\SolutionItemNode.cs" />
+    <Compile Include="IDE\SolutionExplorer\Node Implementations\SolutionNode.cs" />
+    <Compile Include="IDE\SolutionExplorer\Factories\SolutionNodeFactory.cs" />
+    <Compile Include="IDE\SolutionExplorer\VsHierarchyExtensions.cs" />
+    <Compile Include="IDE\SolutionExplorer\VsSolutionHierarchyNode.cs" />
     <Compile Include="IDE\VisualStudioImpl.cs" />
     <Compile Include="IDE\DialogService.cs" />
     <Compile Include="IDE\IVisualStudio.cs" />
@@ -188,6 +236,9 @@
     <Compile Include="Composition\MefServiceLocator.cs" />
     <Compile Include="Composition\ParameterInfoDelegator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Roslyn\Extensions\CSharp\DocumentExtensions.cs" />
+    <Compile Include="Roslyn\Extensions\CSharp\SyntaxGeneratorExtensions.cs" />
+    <Compile Include="Roslyn\Extensions\CSharp\SyntaxNodeExtensions.cs" />
     <Compile Include="Utilities\ReflectionExtensions.cs" />
     <Compile Include="Composition\VsxExportProvider.cs" />
     <Compile Include="Composition\ServiceProviderExtensions.cs" />
@@ -195,20 +246,18 @@
     <Compile Include="Composition\ComponentAttribute.cs" />
     <Compile Include="Roslyn\AttributeParser.cs" />
     <Compile Include="Roslyn\Extensions\CompilationExtensions.cs" />
-    <Compile Include="Roslyn\Extensions\CompilationUnitSyntaxExtensions.cs" />
+    <Compile Include="Roslyn\Extensions\CSharp\CompilationUnitSyntaxExtensions.cs" />
     <Compile Include="Roslyn\Extensions\INamespaceOrTypeSymbolExtensions.cs" />
     <Compile Include="Roslyn\Extensions\ISymbolExtensions.cs" />
     <Compile Include="Roslyn\Extensions\ITypeSymbolExtensions.cs" />
     <Compile Include="Roslyn\Extensions\SyntaxGeneratorExtensions.cs" />
-    <Compile Include="Roslyn\Extensions\SyntaxNodeExtensions.cs" />
-    <Compile Include="Roslyn\Extensions\TypeDeclarationSyntaxExtensions.cs" />
-    <Compile Include="Roslyn\Extensions\TypeNotFoundException.cs" />
+    <Compile Include="Roslyn\Extensions\CSharp\TypeDeclarationSyntaxExtensions.cs" />
+    <Compile Include="Roslyn\TypeNotFoundException.cs" />
     <Compile Include="SingleFileGenerator\BaseCodeGenerator.cs" />
     <Compile Include="SingleFileGenerator\RoslynCodeGeneratorBase.cs" />
     <Compile Include="SingleFileGenerator\BaseTextCodeGenerator.cs" />
-    <Compile Include="SingleFileGenerator\CSharpRoslynCodeGenerationContext.cs" />
     <Compile Include="SingleFileGenerator\CSharpRoslynCodeGenerator.cs" />
-    <Compile Include="SingleFileGenerator\TextFileGeneratorException.cs" />
+    <Compile Include="SingleFileGenerator\CodeGeneratorException.cs" />
     <Compile Include="Utilities\SmartEnumerable.cs" />
     <Compile Include="Utilities\StringUtils.cs" />
   </ItemGroup>
@@ -235,6 +284,7 @@
     <Analyzer Include="..\packages\Microsoft.CodeAnalysis.Analyzers.1.0.0\analyzers\dotnet\cs\Microsoft.CodeAnalysis.Analyzers.dll" />
     <Analyzer Include="..\packages\Microsoft.CodeAnalysis.Analyzers.1.0.0\analyzers\dotnet\cs\Microsoft.CodeAnalysis.CSharp.Analyzers.dll" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

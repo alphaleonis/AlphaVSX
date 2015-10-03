@@ -6,7 +6,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Alphaleonis.Vsx
+namespace Alphaleonis.Vsx.Roslyn
 {
    public static class AttributeParser
    {
@@ -15,7 +15,7 @@ namespace Alphaleonis.Vsx
       /// match the constructor and then assigning its properties from the named arguments. If no matching constructor
       /// is found, or a property is missing or has a value of an incompatible type an exception is thrown.
       /// </summary>
-      /// <exception cref="TextFileGeneratorException">Thrown when a Text File Generator error condition
+      /// <exception cref="CodeGeneratorException">Thrown when a Text File Generator error condition
       /// occurs.</exception>
       /// <typeparam name="T">The type of the instance to create.</typeparam>
       /// <param name="attribute">The attribute data from which to get constructor arguments and property values.</param>
@@ -30,18 +30,18 @@ namespace Alphaleonis.Vsx
          }
          catch (MissingMethodException)
          {
-            throw new TextFileGeneratorException(attribute, $"The attribute {attribute.AttributeClass.Name} uses an unsupported constructor. Valid constructors are: " +
+            throw new CodeGeneratorException(attribute, $"The attribute {attribute.AttributeClass.Name} uses an unsupported constructor. Valid constructors are: " +
                GetValidConstructors<T>(attribute));
          }
          catch (AmbiguousMatchException)
          {
             var argTypes = attribute.ConstructorArguments.Select(a => ResolveAttributeArgumentType(a)).ToArray();
             if (argTypes.Any(t => t == null))
-               throw new TextFileGeneratorException(attribute, $"Could not resolve the arguments of the attribute {attribute.AttributeClass.Name}, since the constructor arguments are ambiguous. Valid constructors are: {GetValidConstructors<T>(attribute)}");
+               throw new CodeGeneratorException(attribute, $"Could not resolve the arguments of the attribute {attribute.AttributeClass.Name}, since the constructor arguments are ambiguous. Valid constructors are: {GetValidConstructors<T>(attribute)}");
 
             var ctorInfo = typeof(T).GetConstructor(argTypes);
             if (ctorInfo == null)
-               throw new TextFileGeneratorException(attribute, $"Could not resolve the arguments of the attribute {attribute.AttributeClass.Name}, since the constructor arguments are ambiguous.  Valid constructors are: {GetValidConstructors<T>(attribute)}");
+               throw new CodeGeneratorException(attribute, $"Could not resolve the arguments of the attribute {attribute.AttributeClass.Name}, since the constructor arguments are ambiguous.  Valid constructors are: {GetValidConstructors<T>(attribute)}");
 
             result = (T)ctorInfo.Invoke(attribute.ConstructorArguments.Select(arg => arg.Value).ToArray());
          }
@@ -51,19 +51,19 @@ namespace Alphaleonis.Vsx
             PropertyInfo property = typeof(T).GetProperty(namedArg.Key);
             if (property == null)
             {
-               throw new TextFileGeneratorException(attribute, $"Unsupported named argument {namedArg.Key} of attribute {attribute.AttributeClass.Name}. Supported arguments are: " +
+               throw new CodeGeneratorException(attribute, $"Unsupported named argument {namedArg.Key} of attribute {attribute.AttributeClass.Name}. Supported arguments are: " +
                   String.Join(", ", typeof(T).GetProperties().Where(p => p.CanWrite).Select(p => $"{(p.PropertyType.Equals(typeof(INamedTypeSymbol)) ? typeof(Type).Name : p.PropertyType.Name)} {p.Name}")));
             }
 
             if (!property.CanWrite)
             {
-               throw new TextFileGeneratorException(attribute, $"Unsupported named argument {namedArg.Key} of attribute {attribute.AttributeClass.Name}. Supported arguments are: " +
+               throw new CodeGeneratorException(attribute, $"Unsupported named argument {namedArg.Key} of attribute {attribute.AttributeClass.Name}. Supported arguments are: " +
                   String.Join(", ", typeof(T).GetProperties().Where(p => p.CanWrite).Select(p => $"{(p.PropertyType.Equals(typeof(INamedTypeSymbol)) ? typeof(Type).Name : p.PropertyType.Name)} {p.Name}")));
             }
 
             if (namedArg.Value.IsNull && property.PropertyType.IsValueType)
             {
-               throw new TextFileGeneratorException(attribute, $"Unsupported value for named argument {namedArg.Key} of attribute {attribute.AttributeClass.Name}. The value cannot be null.");
+               throw new CodeGeneratorException(attribute, $"Unsupported value for named argument {namedArg.Key} of attribute {attribute.AttributeClass.Name}. The value cannot be null.");
             }
 
 
@@ -80,14 +80,14 @@ namespace Alphaleonis.Vsx
                   }
                   catch
                   {
-                     throw new TextFileGeneratorException(attribute, $"The enum value {namedArg.Value.Type.Name}.{enumFieldName} is not supported. Valid values for this enum are: {StringUtils.Join(Enum.GetNames(property.PropertyType), ", ", " and ", "'")}.");
+                     throw new CodeGeneratorException(attribute, $"The enum value {namedArg.Value.Type.Name}.{enumFieldName} is not supported. Valid values for this enum are: {StringUtils.Join(Enum.GetNames(property.PropertyType), ", ", " and ", "'")}.");
                   }
 
 
                }
                else
                {
-                  throw new TextFileGeneratorException(attribute, $"Unsupported value for named argument {namedArg.Key} of attribute {attribute.AttributeClass.Name}. The value must be assignable to " +
+                  throw new CodeGeneratorException(attribute, $"Unsupported value for named argument {namedArg.Key} of attribute {attribute.AttributeClass.Name}. The value must be assignable to " +
                      (property.PropertyType.Equals(typeof(INamedTypeSymbol)) ? typeof(Type).Name : property.PropertyType.Name));
                }
             }
@@ -97,6 +97,12 @@ namespace Alphaleonis.Vsx
             }
 
             property.SetValue(result, value);
+         }
+
+         PropertyInfo attributeNameProperty = result.GetType().GetProperty("AttributeName", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+         if (attributeNameProperty != null && attributeNameProperty.CanWrite && attributeNameProperty.PropertyType.IsAssignableFrom(typeof(string)))
+         {
+            attributeNameProperty.SetValue(result, attribute.AttributeClass.Name);
          }
 
          return result;

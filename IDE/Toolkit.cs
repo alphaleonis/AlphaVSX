@@ -1,16 +1,17 @@
 ﻿using Microsoft.Practices.ServiceLocation;
 using Microsoft.VisualStudio.ComponentModelHost;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
 using System.ComponentModel.Composition.Primitives;
 using System.Linq;
 using System.Reflection;
+using System.Reflection.Context;
 
 namespace Alphaleonis.Vsx
 {
-
    public static class Toolkit
    {
       public static IVisualStudio Initialize(IServiceProvider package, bool satisfyImportsOfPackage = true, bool includeVsComponentModel = false)
@@ -24,7 +25,7 @@ namespace Alphaleonis.Vsx
          assemblies.TryAdd(package.GetType().Assembly);
 
          ComposablePartCatalog catalog = new AggregateCatalog(assemblies.Select(asm => new ComponentCatalog(asm)));
-
+         
          ExportProvider[] providers;
          if (vsComponentModel != null)
          {

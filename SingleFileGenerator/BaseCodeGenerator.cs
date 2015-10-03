@@ -1,7 +1,10 @@
 using Microsoft.VisualStudio;
+using Microsoft.VisualStudio.OLE.Interop;
+using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -14,13 +17,14 @@ namespace Alphaleonis.Vsx
    /// Base class for a single file code generator.
    /// </summary>
    [ComVisible(true)]
-   public abstract class BaseCodeGenerator : IVsSingleFileGenerator
+   public abstract class BaseCodeGenerator : IVsSingleFileGenerator, IObjectWithSite
    {
       #region Private Fields
 
       private IVsGeneratorProgress m_progress;
       private string m_codeFileNamespace = String.Empty;
       private string m_codeFilePath = String.Empty;
+      private ServiceProvider m_serviceProvider;
 
       #endregion
 
@@ -151,7 +155,7 @@ namespace Alphaleonis.Vsx
       #endregion
 
       #region Protected Methods
-      
+
       /// <summary>Method that will communicate an error via the shell callback mechanism.</summary>
       /// <param name="message">Text displayed to the user.</param>
       /// <param name="line">Line number of error.</param>
@@ -211,6 +215,98 @@ namespace Alphaleonis.Vsx
             progress.Progress((uint)current, (uint)total);
          }
       }
+
+      #region IObjectWithSite Members
+
+      public object Site { get; private set; }
+
+      void IObjectWithSite.GetSite(ref Guid riid, out IntPtr ppvSite)
+      {
+         IntPtr pUnk = Marshal.GetIUnknownForObject(Site);
+         IntPtr intPointer = IntPtr.Zero;
+         Marshal.QueryInterface(pUnk, ref riid, out intPointer);
+         ppvSite = intPointer;
+      }
+
+      void IObjectWithSite.SetSite(object pUnkSite)
+      {
+         Site = pUnkSite;
+
+         //var provider = new ServiceProvider(Site as Microsoft.VisualStudio.OLE.Interop.IServiceProvider);
+         //ISite site = Site as ISite;
+         //IVsHierarchy vsh = provider.GetService<IVsHierarchy>();
+         //EnvDTE.ProjectItem projItem = provider.GetService<EnvDTE.ProjectItem>();
+         
+         //var items = projItem.ProjectItems?.Cast<EnvDTE.ProjectItem>()?.ToArray();
+
+         //VSLangProj.FileProperties fp = Site as VSLangProj.FileProperties;
+         //VSLangProj80.FileProperties2 fp2 = Site as VSLangProj80.FileProperties2;
+
+         //var types = AppDomain.CurrentDomain.GetAssemblies().SelectMany(asm =>
+         //{
+         //   try
+         //   {
+         //      return asm.GetTypes().Where(t => t.IsInterface);
+         //   }
+         //   catch
+         //   {
+         //      return Enumerable.Empty<Type>();
+         //   }
+         //}).Where(t =>
+         //{
+         //   try
+
+         //   {
+         //      return provider.GetService(t) != null;
+         //   }
+         //   catch
+         //   {
+         //      return false;
+         //   }
+         //}).ToArray();
+      }
+
+      private ServiceProvider SiteServiceProvider
+      {
+         get
+         {
+            if (m_serviceProvider == null)
+            {
+               m_serviceProvider = new ServiceProvider(Site as Microsoft.VisualStudio.OLE.Interop.IServiceProvider);
+            }
+
+            return m_serviceProvider;
+         }
+      }
+
+      protected TService GetService<TRegistration, TService>()
+      {
+         var serviceProvider = Site as Microsoft.VisualStudio.OLE.Interop.IServiceProvider;
+         if (serviceProvider != null)
+         {
+            var sp = new Microsoft.VisualStudio.Shell.ServiceProvider(serviceProvider);
+            return sp.GetService<TRegistration, TService>();
+         }
+
+         return default(TService);
+      }
+
+      protected object GetService(Guid serviceGuid)
+      {
+         return SiteServiceProvider.GetService(serviceGuid);
+      }
+
+      /// <summary>
+      /// Method to get a service by its Type
+      /// </summary>
+      /// <param name="serviceType">Type of service to retrieve</param>
+      /// <returns>An object that implements the requested service</returns>
+      protected object GetService(Type serviceType)
+      {
+         return SiteServiceProvider.GetService(serviceType);
+      }
+
+      #endregion
 
       #endregion
    }

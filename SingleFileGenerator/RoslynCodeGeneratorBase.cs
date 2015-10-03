@@ -3,6 +3,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.LanguageServices;
 using System;
+using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -27,11 +28,31 @@ namespace Alphaleonis.Vsx
             Solution solution = workspace.CurrentSolution;
             if (solution == null)
                throw new InvalidOperationException($"No solution found in the current workspace.");
+     
 
-            DocumentId documentId = solution.GetDocumentIdsWithFilePath(inputFilePath).FirstOrDefault();
+            ImmutableArray<DocumentId> matchingDocuments = solution.GetDocumentIdsWithFilePath(inputFilePath);
+            DocumentId documentId = null;
+
+            if (matchingDocuments.Length == 1)
+            {
+               documentId = matchingDocuments[0];
+            }
+            else
+            {
+               EnvDTE.ProjectItem dteProjectItem = GetService(typeof(EnvDTE.ProjectItem)) as EnvDTE.ProjectItem;
+               if (dteProjectItem == null)
+                  throw new Exception($"Unable to uniquely determine which project item matches the input file \"{inputFilePath}\". Multiple matches was found and the ProjectItem was not available from EnvDTE.");
+
+               EnvDTE.Project dteProject = dteProjectItem.ContainingProject;
+               Project roslynProject = solution.Projects.FirstOrDefault(p => p.FilePath == dteProject.FullName);
+               if (roslynProject == null)
+                  throw new Exception($"Unable to determine which project item matches the input file \"{inputFilePath}\". The project with the path \"{dteProject.FullName}\" could not be located.");
+
+               documentId = roslynProject.Documents.FirstOrDefault(doc => doc.FilePath == dteProjectItem.FileNames[0])?.Id;
+            }
 
             if (documentId == null)
-               throw new TextFileGeneratorException(String.Format("Unable to find a document matching the file path \"{0}\".", inputFilePath));
+               throw new CodeGeneratorException(String.Format("Unable to find a document matching the file path \"{0}\".", inputFilePath));
 
             Document document = solution.GetDocument(documentId);
 

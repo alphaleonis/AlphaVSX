@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AlphaVSX.Roslyn
+namespace Alphaleonis.Vsx.Roslyn.CSharp
 {
    public static class CompilationUnitSyntaxExtensions
    {

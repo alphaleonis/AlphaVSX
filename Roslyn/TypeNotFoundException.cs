@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 
-namespace Alphaleonis.Vsx
+namespace Alphaleonis.Vsx.Roslyn
 {
 
    [Serializable]
