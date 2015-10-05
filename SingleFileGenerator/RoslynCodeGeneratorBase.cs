@@ -7,6 +7,7 @@ using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Runtime.Versioning;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -33,23 +34,29 @@ namespace Alphaleonis.Vsx
             ImmutableArray<DocumentId> matchingDocuments = solution.GetDocumentIdsWithFilePath(inputFilePath);
             DocumentId documentId = null;
 
-            if (matchingDocuments.Length == 1)
+            // It's a shame we have to resort to using the EnvDTE API here, but it seems to be the only way to retrieve the 
+            // actual project of the item that we are saving. (It is possible to have the same source file in several projects)
+            // Also, at the time of writing, it does not seem to be possible to retrieve the target framework version from the Roslyn API. 
+            EnvDTE.ProjectItem dteProjectItem = GetService(typeof(EnvDTE.ProjectItem)) as EnvDTE.ProjectItem;
+            if (dteProjectItem == null)
+               throw new Exception($"Unable to uniquely determine which project item matches the input file \"{inputFilePath}\". Multiple matches was found and the ProjectItem was not available from EnvDTE.");
+
+            EnvDTE.Project dteProject = dteProjectItem.ContainingProject;
+            Project roslynProject = solution.Projects.FirstOrDefault(p => p.FilePath == dteProject.FullName);
+            if (roslynProject == null)
+               throw new Exception($"Unable to determine which project item matches the input file \"{inputFilePath}\". The project with the path \"{dteProject.FullName}\" could not be located.");
+               
+            string targetFrameworkMoniker = dteProject.Properties?.Item("TargetFrameworkMoniker")?.Value as string;
+            if (targetFrameworkMoniker != null)
             {
-               documentId = matchingDocuments[0];
+               TargetFrameworkName = new FrameworkName(targetFrameworkMoniker);
             }
             else
             {
-               EnvDTE.ProjectItem dteProjectItem = GetService(typeof(EnvDTE.ProjectItem)) as EnvDTE.ProjectItem;
-               if (dteProjectItem == null)
-                  throw new Exception($"Unable to uniquely determine which project item matches the input file \"{inputFilePath}\". Multiple matches was found and the ProjectItem was not available from EnvDTE.");
-
-               EnvDTE.Project dteProject = dteProjectItem.ContainingProject;
-               Project roslynProject = solution.Projects.FirstOrDefault(p => p.FilePath == dteProject.FullName);
-               if (roslynProject == null)
-                  throw new Exception($"Unable to determine which project item matches the input file \"{inputFilePath}\". The project with the path \"{dteProject.FullName}\" could not be located.");
-
-               documentId = roslynProject.Documents.FirstOrDefault(doc => doc.FilePath == dteProjectItem.FileNames[0])?.Id;
+               TargetFrameworkName = null;
             }
+
+            documentId = roslynProject.Documents.FirstOrDefault(doc => doc.FilePath == dteProjectItem.FileNames[0])?.Id;
 
             if (documentId == null)
                throw new CodeGeneratorException(String.Format("Unable to find a document matching the file path \"{0}\".", inputFilePath));
@@ -62,6 +69,8 @@ namespace Alphaleonis.Vsx
          });
       }
 
+      protected FrameworkName TargetFrameworkName { get; private set; }
+      
       protected abstract Task<Document> GenerateCodeAsync(Document inputDocument);
    }
 }
