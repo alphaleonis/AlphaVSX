@@ -12,8 +12,7 @@ namespace Alphaleonis.Vsx
    public abstract class CSharpRoslynCodeGenerator : RoslynCodeGeneratorBase
    {
       protected sealed override async Task<Document> GenerateCodeAsync(Document inputDocument)
-      {
-         
+      {         
          ReportProgress(0, 100);         
          CompilationUnitSyntax compilationUnit = await GenerateCompilationUnit(inputDocument);
          SyntaxNode targetNode = Formatter.Format(compilationUnit, inputDocument.Project.Solution.Workspace);

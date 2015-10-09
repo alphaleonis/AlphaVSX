@@ -231,46 +231,13 @@ namespace Alphaleonis.Vsx
       void IObjectWithSite.SetSite(object pUnkSite)
       {
          Site = pUnkSite;
-
-         //var provider = new ServiceProvider(Site as Microsoft.VisualStudio.OLE.Interop.IServiceProvider);
-         //ISite site = Site as ISite;
-         //IVsHierarchy vsh = provider.GetService<IVsHierarchy>();
-         //EnvDTE.ProjectItem projItem = provider.GetService<EnvDTE.ProjectItem>();
-         
-         //var items = projItem.ProjectItems?.Cast<EnvDTE.ProjectItem>()?.ToArray();
-
-         //VSLangProj.FileProperties fp = Site as VSLangProj.FileProperties;
-         //VSLangProj80.FileProperties2 fp2 = Site as VSLangProj80.FileProperties2;
-
-         //var types = AppDomain.CurrentDomain.GetAssemblies().SelectMany(asm =>
-         //{
-         //   try
-         //   {
-         //      return asm.GetTypes().Where(t => t.IsInterface);
-         //   }
-         //   catch
-         //   {
-         //      return Enumerable.Empty<Type>();
-         //   }
-         //}).Where(t =>
-         //{
-         //   try
-
-         //   {
-         //      return provider.GetService(t) != null;
-         //   }
-         //   catch
-         //   {
-         //      return false;
-         //   }
-         //}).ToArray();
       }
 
       private ServiceProvider SiteServiceProvider
       {
          get
          {
-            if (m_serviceProvider == null)
+            if (m_serviceProvider == null && Site != null)
             {
                m_serviceProvider = new ServiceProvider(Site as Microsoft.VisualStudio.OLE.Interop.IServiceProvider);
             }
@@ -279,7 +246,7 @@ namespace Alphaleonis.Vsx
          }
       }
 
-      protected TService GetService<TRegistration, TService>()
+      protected TService GetService<TRegistration, TService>() where TService : class
       {
          var serviceProvider = Site as Microsoft.VisualStudio.OLE.Interop.IServiceProvider;
          if (serviceProvider != null)
@@ -290,6 +257,7 @@ namespace Alphaleonis.Vsx
 
          return default(TService);
       }
+      
 
       protected object GetService(Guid serviceGuid)
       {

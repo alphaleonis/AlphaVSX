@@ -5,8 +5,7 @@ using System;
 using Alphaleonis.Vsx.IDE;
 
 namespace Alphaleonis.Vsx
-{
-   [Component(true)]
+{   
    internal class VisualStudioImpl : IVisualStudio
    {
       private readonly Lazy<ISolutionExplorer> m_solutionExplorer;

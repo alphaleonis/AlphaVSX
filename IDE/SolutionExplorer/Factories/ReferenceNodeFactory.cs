@@ -3,8 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 namespace Alphaleonis.Vsx.IDE
-{
-   [Component("Part", true)]
+{   
    internal class ReferenceNodeFactory : ISolutionExplorerNodeFactory
    {
       private readonly Lazy<ISolutionExplorerNodeFactory> m_nodeFactory;

@@ -10,8 +10,7 @@ namespace Alphaleonis.Vsx.IDE
    {
       ISolutionNode Solution { get; }
    }
-
-   [Component(true)]
+   
    internal class SolutionExplorer : ISolutionExplorer
    {
       private readonly IServiceProvider m_serviceProvider;
@@ -27,7 +26,7 @@ namespace Alphaleonis.Vsx.IDE
       {
          get
          {
-            return (ISolutionNode)m_nodeFactory.Create(new VsSolutionHierarchyNode(m_serviceProvider.GetService<IVsSolution>() as IVsHierarchy, VSConstants.VSITEMID_ROOT), null);
+            return (ISolutionNode)m_nodeFactory.Create(new VsSolutionHierarchyNode(m_serviceProvider.GetService<SVsSolution, IVsSolution>() as IVsHierarchy, VSConstants.VSITEMID_ROOT), null);
          }
       }      
    }

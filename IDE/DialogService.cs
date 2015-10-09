@@ -5,8 +5,7 @@ using System.ComponentModel.Composition;
 using System.Windows;
 
 namespace Alphaleonis.Vsx
-{
-   [Component(true)]   
+{   
    internal class DialogService : IDialogService
    {
       #region Private Fields

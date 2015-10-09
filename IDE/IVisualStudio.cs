@@ -1,5 +1,6 @@
 ﻿using Alphaleonis.Vsx.IDE;
 using Microsoft.Practices.ServiceLocation;
+using Microsoft.Practices.Unity;
 
 namespace Alphaleonis.Vsx
 {

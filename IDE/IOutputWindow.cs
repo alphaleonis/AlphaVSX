@@ -98,8 +98,7 @@ namespace Alphaleonis.Vsx
          }
       }
    }
-
-   [Component(true)]
+   
    internal class OutputWindow : IOutputWindow
    {
       private readonly IServiceProvider m_serviceProvider;

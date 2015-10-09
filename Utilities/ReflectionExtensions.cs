@@ -18,5 +18,13 @@ namespace Alphaleonis.Vsx
       {
          return member.IsDefined(typeof(T), inherit);
       }
+
+      public static bool Implements<T>(this Type type)
+      {
+         if (type == null)
+            throw new ArgumentNullException("type", "type is null.");
+
+         return type.GetInterfaces().Any(ifc => ifc.Equals(type));
+      }
    }
 }

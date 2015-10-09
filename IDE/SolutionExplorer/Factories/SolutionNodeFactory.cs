@@ -5,7 +5,6 @@ using System.Linq;
 
 namespace Alphaleonis.Vsx.IDE
 {
-   [Component("Part", true)]
    internal class SolutionNodeFactory : ISolutionExplorerNodeFactory
    {
       private readonly Lazy<ISolutionExplorerNodeFactory> m_nodeFactory;

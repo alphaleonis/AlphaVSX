@@ -1,17 +1,12 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel.Composition;
-using System.Linq;
 
 namespace Alphaleonis.Vsx.IDE
 {
-   [Component("Part", true)]
    internal class FolderNodeFactory : ISolutionExplorerNodeFactory
    {
-
       private readonly Lazy<ISolutionExplorerNodeFactory> m_nodeFactory;
 
-      public FolderNodeFactory([Import] Lazy<ISolutionExplorerNodeFactory> nodeFactory)
+      public FolderNodeFactory(Lazy<ISolutionExplorerNodeFactory> nodeFactory)
       {
          m_nodeFactory = nodeFactory;
       }

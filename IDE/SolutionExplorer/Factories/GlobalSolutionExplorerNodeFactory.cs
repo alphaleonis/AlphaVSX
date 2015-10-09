@@ -1,16 +1,14 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.Composition;
 using System.Linq;
 
 namespace Alphaleonis.Vsx.IDE
 {
-   [Component(true)]
    internal class GlobalSolutionExplorerNodeFactory : ISolutionExplorerNodeFactory
    {
       private readonly IEnumerable<ISolutionExplorerNodeFactory> m_factories;
 
-      public GlobalSolutionExplorerNodeFactory([ImportMany("Part")] IEnumerable<ISolutionExplorerNodeFactory> factories)
+      public GlobalSolutionExplorerNodeFactory(IEnumerable<ISolutionExplorerNodeFactory> factories)
       {
          m_factories = factories;
       }
@@ -26,4 +24,3 @@ namespace Alphaleonis.Vsx.IDE
       }
    }
 }
-

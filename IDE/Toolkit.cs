@@ -1,4 +1,7 @@
-﻿using Microsoft.Practices.ServiceLocation;
+﻿using Alphaleonis.Vsx.IDE;
+using Alphaleonis.Vsx.Unity;
+using Microsoft.Practices.ServiceLocation;
+using Microsoft.Practices.Unity;
 using Microsoft.VisualStudio.ComponentModelHost;
 using System;
 using System.Collections.Generic;
@@ -14,62 +17,38 @@ namespace Alphaleonis.Vsx
 {
    public static class Toolkit
    {
-      public static IVisualStudio Initialize(IServiceProvider package, bool satisfyImportsOfPackage = true, bool includeVsComponentModel = false)
+      public static IVisualStudio Initialize(IServiceProvider package, ServiceLocatorOptions serviceLocatorOptions = ServiceLocatorOptions.PackageServiceProvider)
       {
-         // Allow dependencies of VS exported services.
-         IComponentModel vsComponentModel = includeVsComponentModel ? package.TryGetService<SComponentModel, IComponentModel>() : null;
-
-         AssemblyCollection assemblies = new AssemblyCollection();
-
-         assemblies.Add(Assembly.GetExecutingAssembly());
-         assemblies.TryAdd(package.GetType().Assembly);
-
-         ComposablePartCatalog catalog = new AggregateCatalog(assemblies.Select(asm => new ComponentCatalog(asm)));
-         
-         ExportProvider[] providers;
-         if (vsComponentModel != null)
-         {
-            providers = new ExportProvider[] { new VsxExportProvider(package), vsComponentModel.DefaultExportProvider };
-         }
-         else
-         {
-            providers = new ExportProvider[] { new VsxExportProvider(package) };
-         }
-
-         CompositionContainer container = new CompositionContainer(catalog, providers);
-
-         MefServiceLocator serviceLocator = new MefServiceLocator(container);
-         container.ComposeExportedValue<IServiceLocator>(serviceLocator);
-         container.ComposeExportedValue<IServiceProvider>(serviceLocator);
-
-         if (satisfyImportsOfPackage)
-            container.ComposeParts(package);
-
-         return serviceLocator.GetInstance<IVisualStudio>();
+         IUnityContainer container = ConfigureContainer(package, serviceLocatorOptions);
+         container.BuildUp(package);
+         return container.Resolve<IVisualStudio>();
       }
 
-      private class AssemblyCollection : KeyedCollection<string, Assembly>
-      {         
-         public AssemblyCollection()
-            : base(StringComparer.OrdinalIgnoreCase)
-         {
-         }
+      private static IUnityContainer ConfigureContainer(IServiceProvider package, ServiceLocatorOptions options)
+      {
+         if (package == null)
+            throw new ArgumentNullException(nameof(package), $"{nameof(package)} is null.");
 
-         public bool TryAdd(Assembly assembly)
-         {
-            if (!Contains(assembly.Location))
-            {
-               Add(assembly);
-               return true;
-            }
+         IUnityContainer container = new UnityContainer();
+         container.AddExtension(new ServiceProviderUnityExtension(package, options));
 
-            return false;
-         }
+         container.RegisterType<IVisualStudio, VisualStudioImpl>(new ContainerControlledLifetimeManager());
+         container.RegisterTypes(new SolutionExplorerNodeFactoryRegistrationConvention());
+         container.RegisterType<IEnumerable<ISolutionExplorerNodeFactory>, ISolutionExplorerNodeFactory[]>();
+         container.RegisterType<ISolutionExplorerNodeFactory, GlobalSolutionExplorerNodeFactory>();
 
-         protected override string GetKeyForItem(Assembly item)
-         {
-            return item.Location;
-         }
+         container.RegisterType<ISolutionExplorer, SolutionExplorer>();
+         container.RegisterType<IOutputWindow, OutputWindow>();
+         container.RegisterType<IDialogService, DialogService>();
+         container.RegisterInstance<IServiceProvider>(package);
+
+         UnityServiceLocator serviceLocator = new UnityServiceLocator(container);
+         container.RegisterInstance<IServiceLocator>(serviceLocator);
+
+         if (!ServiceLocator.IsLocationProviderSet)
+            ServiceLocator.SetLocatorProvider(() => serviceLocator);
+
+         return container;
       }
    }
 }
