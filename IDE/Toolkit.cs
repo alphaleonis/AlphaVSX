@@ -17,11 +17,27 @@ namespace Alphaleonis.Vsx
 {
    public static class Toolkit
    {
-      public static IVisualStudio Initialize(IServiceProvider package, ServiceLocatorOptions serviceLocatorOptions = ServiceLocatorOptions.PackageServiceProvider)
+      public static IToolkit Initialize(IServiceProvider package, ServiceLocatorOptions serviceLocatorOptions = ServiceLocatorOptions.PackageServiceProvider, bool buildupPackage = true)
       {
          IUnityContainer container = ConfigureContainer(package, serviceLocatorOptions);
-         container.BuildUp(package);
-         return container.Resolve<IVisualStudio>();
+
+         if (buildupPackage)
+            container.BuildUp(package);
+
+         return container.Resolve<IToolkit>();
+      }
+
+      private static void RegisterCommands(IUnityContainer container, IEnumerable<Type> types)
+      {
+         if (types == null)
+            throw new ArgumentNullException(nameof(types), $"{nameof(types)} is null.");
+         
+         types = types.Where(type => type.Implements<ICommandImplementation>() && type.IsDefined<CommandAttribute>(false));
+
+         foreach (var type in types)
+         {
+            container.RegisterType(typeof(ICommandImplementation), type, $"{type.FullName}", new ContainerControlledLifetimeManager());
+         }
       }
 
       private static IUnityContainer ConfigureContainer(IServiceProvider package, ServiceLocatorOptions options)
@@ -32,15 +48,20 @@ namespace Alphaleonis.Vsx
          IUnityContainer container = new UnityContainer();
          container.AddExtension(new ServiceProviderUnityExtension(package, options));
 
-         container.RegisterType<IVisualStudio, VisualStudioImpl>(new ContainerControlledLifetimeManager());
+         container.RegisterType<IToolkit, TookitImpl>(new ContainerControlledLifetimeManager());
          container.RegisterTypes(new SolutionExplorerNodeFactoryRegistrationConvention());
          container.RegisterType<IEnumerable<ISolutionExplorerNodeFactory>, ISolutionExplorerNodeFactory[]>();
          container.RegisterType<ISolutionExplorerNodeFactory, GlobalSolutionExplorerNodeFactory>();
 
          container.RegisterType<ISolutionExplorer, SolutionExplorer>();
-         container.RegisterType<IOutputWindow, OutputWindow>();
-         container.RegisterType<IDialogService, DialogService>();
+         container.RegisterType<IOutputWindow, OutputWindow>(new ContainerControlledLifetimeManager());
+         container.RegisterType<IDialogService, DialogService>(new ContainerControlledLifetimeManager());
+
+         container.RegisterType<IEnumerable<ICommandImplementation>, ICommandImplementation[]>();
+
          container.RegisterInstance<IServiceProvider>(package);
+
+         container.RegisterType<ICommandManager, CommandManager>(new ContainerControlledLifetimeManager());
 
          UnityServiceLocator serviceLocator = new UnityServiceLocator(container);
          container.RegisterInstance<IServiceLocator>(serviceLocator);
@@ -51,4 +72,6 @@ namespace Alphaleonis.Vsx
          return container;
       }
    }
+
+   
 }

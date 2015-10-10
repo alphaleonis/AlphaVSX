@@ -24,7 +24,7 @@ namespace Alphaleonis.Vsx
          if (type == null)
             throw new ArgumentNullException("type", "type is null.");
 
-         return type.GetInterfaces().Any(ifc => ifc.Equals(type));
+         return type.GetInterfaces().Any(ifc => ifc.Equals(typeof(T)));
       }
    }
 }

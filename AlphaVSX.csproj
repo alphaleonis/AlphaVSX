@@ -184,6 +184,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Core" />
+    <Reference Include="System.Design" />
     <Reference Include="System.Reflection.Context" />
     <Reference Include="System.Reflection.Metadata, Version=1.0.22.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Reflection.Metadata.1.0.22\lib\dotnet\System.Reflection.Metadata.dll</HintPath>
@@ -202,6 +203,14 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IDE\Commands\CommandAttribute.cs" />
+    <Compile Include="IDE\Commands\ICommandImplementation.cs" />
+    <Compile Include="IDE\Commands\ICommandManager.cs" />
+    <Compile Include="IDE\Commands\IDynamicCommandImplementation.cs" />
+    <Compile Include="IDE\Commands\IMenuCommand.cs" />
+    <Compile Include="IDE\Commands\OleMenuCommmandAdapter.cs" />
+    <Compile Include="IDE\Commands\CommandImplementationAdapter.cs" />
+    <Compile Include="IDE\Commands\VsDynamicCommandImplementationAdapter.cs" />
     <Compile Include="IDE\IOutputWindow.cs" />
     <Compile Include="IDE\SolutionExplorer\EnumerableExtensions.cs" />
     <Compile Include="IDE\SolutionExplorer\Factories\SolutionExplorerNodeFactoryRegistrationConvention.cs" />
@@ -240,9 +249,9 @@
     <Compile Include="IDE\SolutionExplorer\Factories\SolutionNodeFactory.cs" />
     <Compile Include="IDE\SolutionExplorer\VsHierarchyExtensions.cs" />
     <Compile Include="IDE\SolutionExplorer\VsSolutionHierarchyNode.cs" />
-    <Compile Include="IDE\VisualStudioImpl.cs" />
+    <Compile Include="IDE\TookitImpl.cs" />
     <Compile Include="IDE\DialogService.cs" />
-    <Compile Include="IDE\IVisualStudio.cs" />
+    <Compile Include="IDE\IToolkit.cs" />
     <Compile Include="IDE\IDialogService.cs" />
     <Compile Include="IoC\ServiceLocatorOptions.cs" />
     <Compile Include="IoC\ServiceProviderUnityExtension.cs" />
