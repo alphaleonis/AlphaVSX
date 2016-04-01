@@ -6,9 +6,11 @@ namespace Alphaleonis.Vsx.IDE
 {
    public interface IProjectNode : ISolutionExplorerNode, IEquatable<IProjectNode>
    {
-      EnvDTE.Project DteProject { get; }
+      EnvDTE.Project DTEProject { get; }
 
       string FullPath { get; }
+
+      dynamic Properties { get; }
    }
 }
 

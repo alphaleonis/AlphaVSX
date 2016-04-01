@@ -8,7 +8,7 @@ namespace Alphaleonis.Vsx.IDE
 {
    internal class ProjectNode : SolutionExplorerNode, IProjectNode
    {
-      private readonly Lazy<EnvDTE.Project> m_project;
+      internal readonly Lazy<EnvDTE.Project> m_dteProject;
      
       public ProjectNode(VsSolutionHierarchyNode hierarchyNode, Lazy<ISolutionExplorerNode> parentNode, ISolutionExplorerNodeFactory nodeFactory)
           : base(SolutionExplorerNodeKind.Project, hierarchyNode, parentNode, nodeFactory)
@@ -16,20 +16,23 @@ namespace Alphaleonis.Vsx.IDE
          if (parentNode == null)
             throw new ArgumentNullException(nameof(parentNode), $"{nameof(parentNode)} is null.");
 
-         m_project = new Lazy<EnvDTE.Project>(() => (EnvDTE.Project)hierarchyNode.ExtenderObject);
+         m_dteProject = new Lazy<EnvDTE.Project>(() => (EnvDTE.Project)hierarchyNode.ExtenderObject);
+         Properties = new ProjectProperties(this);
       }
 
-      public EnvDTE.Project DteProject
+      public EnvDTE.Project DTEProject
       {
          get
          {
-            return m_project.Value;
+            return m_dteProject.Value;
          }
       }
 
+      public dynamic Properties { get; }
+
       public virtual IFolderNode CreateFolder(string name)
       {       
-         DteProject.ProjectItems.AddFolder(name);
+         DTEProject.ProjectItems.AddFolder(name);
 
          var folder = HierarchyNode.Children.Single(child => child.DisplayName == name);
 
@@ -40,7 +43,7 @@ namespace Alphaleonis.Vsx.IDE
       {
          get
          {
-            return DteProject?.FullName;
+            return DTEProject?.FullName;
          }
       }
 

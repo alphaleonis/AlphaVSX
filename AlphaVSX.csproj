@@ -203,6 +203,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DTE\DTEExtensions.cs" />
     <Compile Include="IDE\Commands\CommandAttribute.cs" />
     <Compile Include="IDE\Commands\ICommandImplementation.cs" />
     <Compile Include="IDE\Commands\ICommandManager.cs" />
@@ -238,6 +239,9 @@
     <Compile Include="IDE\SolutionExplorer\Factories\ReferenceNodeFactory.cs" />
     <Compile Include="IDE\SolutionExplorer\Node Implementations\ReferencesFolderNode.cs" />
     <Compile Include="IDE\SolutionExplorer\Factories\ReferencesFolderNodeFactory.cs" />
+    <Compile Include="IDE\SolutionExplorer\Properties\ItemProperties.cs" />
+    <Compile Include="IDE\SolutionExplorer\Properties\ProjectProperties.cs" />
+    <Compile Include="IDE\SolutionExplorer\SolutionExplorerNodeExtensions.cs" />
     <Compile Include="IDE\SolutionExplorer\SolutionExplorerNodeKind.cs" />
     <Compile Include="IDE\SolutionExplorer\Node Implementations\SolutionExplorerNode.cs" />
     <Compile Include="IDE\SolutionExplorer\Node Implementations\SolutionFolderNode.cs" />

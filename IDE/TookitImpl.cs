@@ -7,13 +7,13 @@ using Microsoft.Practices.Unity;
 
 namespace Alphaleonis.Vsx
 {   
-   internal sealed class TookitImpl : IToolkit
+   internal sealed class ToolkitImpl : IToolkit
    {
       private readonly IUnityContainer m_container;
       private readonly Lazy<ISolutionExplorer> m_solutionExplorer;
       private readonly Lazy<IOutputWindow> m_outputWindow;
 
-      public TookitImpl(IServiceLocator serviceLocator, IDialogService dialogService, Lazy<ISolutionExplorer> solutionExplorer, Lazy<IOutputWindow> outputWindow, ICommandManager commandManager, IUnityContainer container)
+      public ToolkitImpl(IServiceLocator serviceLocator, IDialogService dialogService, Lazy<ISolutionExplorer> solutionExplorer, Lazy<IOutputWindow> outputWindow, ICommandManager commandManager, IUnityContainer container)
       {
          m_container = container;
          CommandManager = commandManager;

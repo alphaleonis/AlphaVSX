@@ -9,8 +9,11 @@ namespace Alphaleonis.Vsx
 {
    public interface IOutputWindow
    {
+      IOutputWindowPane Debug { get; }
+
       void DeletePane(Guid id);
       IOutputWindowPane GetOrCreatePane(Guid id, string title);
+      IOutputWindowPane General { get; }
    }
 
    public interface IOutputWindowPane
@@ -20,6 +23,8 @@ namespace Alphaleonis.Vsx
       void Clear();
       void Activate();
       void Hide();
+      void WriteLine(string message);
+      void WriteLine(string format, params object[] args);
    }
 
    internal class OutputWindowPane : IOutputWindowPane
@@ -67,6 +72,16 @@ namespace Alphaleonis.Vsx
          return new OutputWindowTextWriter(m_vsWindowPane);
       }
 
+      public void WriteLine(string message)
+      {
+         ErrorHandler.ThrowOnFailure(m_vsWindowPane.OutputString(message + Environment.NewLine));
+      }
+
+      public void WriteLine(string format, params object[] args)
+      {
+         ErrorHandler.ThrowOnFailure(m_vsWindowPane.OutputString(String.Format(format, args) + Environment.NewLine));
+      }
+
       private class OutputWindowTextWriter : TextWriter
       {
          private readonly IVsOutputWindowPane m_outputPane;
@@ -83,12 +98,12 @@ namespace Alphaleonis.Vsx
 
          public override void Write(string value)
          {
-            m_outputPane.OutputString(value);
+            ErrorHandler.ThrowOnFailure(m_outputPane.OutputString(value));
          }
 
          public override void WriteLine()
          {
-            m_outputPane.OutputString(Environment.NewLine);
+            ErrorHandler.ThrowOnFailure(m_outputPane.OutputString(Environment.NewLine));
          }
 
          public override void WriteLine(string value)
@@ -102,6 +117,22 @@ namespace Alphaleonis.Vsx
    internal class OutputWindow : IOutputWindow
    {
       private readonly IServiceProvider m_serviceProvider;
+
+      public IOutputWindowPane General
+      {
+         get
+         {
+            return GetOrCreatePane(Microsoft.VisualStudio.VSConstants.GUID_OutWindowGeneralPane, "General");
+         }
+      }
+
+      public IOutputWindowPane Debug
+      {
+         get
+         {
+            return GetOrCreatePane(Microsoft.VisualStudio.VSConstants.GUID_OutWindowDebugPane, "Debug");
+         }
+      }
 
       public OutputWindow(IServiceProvider serviceProvider)
       {

@@ -2,16 +2,12 @@
 using Alphaleonis.Vsx.Unity;
 using Microsoft.Practices.ServiceLocation;
 using Microsoft.Practices.Unity;
-using Microsoft.VisualStudio.ComponentModelHost;
+using Microsoft.VisualStudio.Shell;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel.Composition;
-using System.ComponentModel.Composition.Hosting;
-using System.ComponentModel.Composition.Primitives;
 using System.Linq;
-using System.Reflection;
-using System.Reflection.Context;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Alphaleonis.Vsx
 {
@@ -25,6 +21,64 @@ namespace Alphaleonis.Vsx
             container.BuildUp(package);
 
          return container.Resolve<IToolkit>();
+      }
+
+      private class SomeProgress : IProgress<ProgressInfo>
+      {
+         private readonly CommonMessagePump m_messagePump;
+
+         public SomeProgress(CommonMessagePump messagePump)
+         {
+            m_messagePump = messagePump;
+         }
+
+         public void Report(ProgressInfo value)
+         {
+            if (value.TotalSteps <= 0 || value.CurrentStep < 0)
+            {
+               m_messagePump.EnableRealProgress = false;
+            }
+            else
+            {
+               m_messagePump.EnableRealProgress = true;
+               m_messagePump.CurrentStep = value.CurrentStep;
+               m_messagePump.TotalSteps = value.TotalSteps;               
+            }
+
+            m_messagePump.WaitText = value.WaitText;
+            m_messagePump.ProgressText = value.ProgressText;
+         }
+      }
+
+      public static void RunWithProgress(Func<IProgress<ProgressInfo>, CancellationToken, System.Threading.Tasks.Task> taskFactory, string title)
+      {
+         CommonMessagePump msgPump = new CommonMessagePump();
+         msgPump.AllowCancel = true;
+         msgPump.EnableRealProgress = true;
+         msgPump.WaitTitle = title;
+         msgPump.WaitText = "Please stand by...";
+
+         CancellationTokenSource cts = new CancellationTokenSource();
+         SomeProgress progress = new SomeProgress(msgPump);
+
+         System.Threading.Tasks.Task task = taskFactory(progress, cts.Token);
+
+         var exitCode = msgPump.ModalWaitForHandles(((IAsyncResult)task).AsyncWaitHandle);
+
+         if (exitCode == CommonMessagePumpExitCode.UserCanceled || exitCode == CommonMessagePumpExitCode.ApplicationExit)
+         {
+            cts.Cancel();
+            msgPump = new CommonMessagePump();
+            msgPump.AllowCancel = false;
+            msgPump.EnableRealProgress = false;
+            // Wait for the async operation to actually cancel.
+            msgPump.ModalWaitForHandles(((IAsyncResult)task).AsyncWaitHandle);
+         }
+
+         if (!task.IsCanceled)
+         {
+            task.GetAwaiter().GetResult();
+         }
       }
 
       private static void RegisterCommands(IUnityContainer container, IEnumerable<Type> types)
@@ -48,7 +102,7 @@ namespace Alphaleonis.Vsx
          IUnityContainer container = new UnityContainer();
          container.AddExtension(new ServiceProviderUnityExtension(package, options));
 
-         container.RegisterType<IToolkit, TookitImpl>(new ContainerControlledLifetimeManager());
+         container.RegisterType<IToolkit, ToolkitImpl>(new ExternallyControlledLifetimeManager());
          container.RegisterTypes(new SolutionExplorerNodeFactoryRegistrationConvention());
          container.RegisterType<IEnumerable<ISolutionExplorerNodeFactory>, ISolutionExplorerNodeFactory[]>();
          container.RegisterType<ISolutionExplorerNodeFactory, GlobalSolutionExplorerNodeFactory>();
@@ -64,7 +118,9 @@ namespace Alphaleonis.Vsx
          container.RegisterType<ICommandManager, CommandManager>(new ContainerControlledLifetimeManager());
 
          UnityServiceLocator serviceLocator = new UnityServiceLocator(container);
-         container.RegisterInstance<IServiceLocator>(serviceLocator);
+         // The service locator will dispose the container when it is disposed leading to a StackOverflowException, so we
+         // simply tell the container not to dispose it.
+         container.RegisterInstance<IServiceLocator>(serviceLocator, new ExternallyControlledLifetimeManager()); 
 
          if (!ServiceLocator.IsLocationProviderSet)
             ServiceLocator.SetLocatorProvider(() => serviceLocator);

@@ -20,4 +20,3 @@ namespace Alphaleonis.Vsx.IDE
       }
    }
 }
-

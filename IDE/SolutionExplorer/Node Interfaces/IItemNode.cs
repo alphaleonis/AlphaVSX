@@ -11,6 +11,8 @@ namespace Alphaleonis.Vsx.IDE
       bool IsDirty { get; }
 
       string FullPath { get; }
+
+      dynamic Properties { get; }
    }
 }
 
